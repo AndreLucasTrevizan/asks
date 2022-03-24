@@ -68,24 +68,16 @@ export default new class {
     createUser(req: Request, res: Response) {
         let {firstname, lastname, email, user_password} = req.body;
         let role = req.body.role ? req.body.role : 2;
-
+        
         const errors = validationResult(req);
-
+        console.log(req.body);
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
             let hash = brcyptjs.hashSync(user_password, 15);
             let sql = `INSERT INTO users (
                             firstname, lastname, email, user_password, id_role, createdAt, updatedAt
-                        ) VALUES (
-                            ${firstname},
-                            ${lastname},
-                            ${email},
-                            ${hash},
-                            ${new Date()},
-                            ${new Date()},
-                            ${role}
-                        )`;
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
             db.query(sql, [
                 firstname,
@@ -112,13 +104,18 @@ export default new class {
             res.status(402).json(errors.array());
         } else {
             let sql = `UPDATE users SET
-                            firstname = ${firstname},
-                            lastname = ${lastname},
-                            email = ${email}?,
-                            updatedAt = ${new Date()}
-                        WHERE id = ${id}`;
-
-            db.query(sql, (err: any, result) => {
+                            firstname = ?,
+                            lastname = ?,
+                            email = ?,
+                            updatedAt = ?
+                        WHERE id = ?`;
+            db.query(sql, [
+                firstname,
+                lastname,
+                email,
+                new Date(),
+                id
+            ], (err: any, result) => {
                 if(err) res.status(400).json(err.message);
 
                 res.status(200).json(result);
@@ -128,7 +125,12 @@ export default new class {
 
     deleteUser(req: Request, res: Response) {
         let { id } = req.params;
-        let sql = `DELETE FROM users WHERE id = ${id}`;
+        let sql = `DELETE FROM users WHERE id = ?`;
+        db.query(sql, id, (err: any, result) => {
+            if(err) res.status(400).json(err.message);
+
+            res.status(200).json(result);
+        });
     }
 
 }
