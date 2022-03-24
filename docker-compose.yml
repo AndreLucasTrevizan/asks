@@ -1,6 +1,18 @@
 version: '3.7'
 
 services:
+  asksdatabase:
+    image: mysql
+    container_name: asksdb_container
+    environment:
+      MYSQL_DATABASE: 'asksdb'
+      MYSQL_ROOT_PASSWORD: 'asksdbpassword'
+    volumes:
+      - './database/:/var/lib/mysql'
+    ports:
+      - '9706:3306'
+    networks:
+      - backend
   asksapi:
     build: './api'
     container_name: asksapi_container
@@ -11,19 +23,6 @@ services:
       - '8080:8080'
     networks:
       - backend
-  asksdb:
-    image: mysql
-    container_name: asksdb_container
-    environment:
-      MYSQL_DATABASE: asksdb
-      MYSQL_ROOT_PASSWORD: asdbpassword
-    volumes:
-      - './database/:/var/lib/mysql'
-    ports:
-      - '9706:3306'
-    networks:
-      - backend
-
 networks:
   backend:
     driver: bridge

@@ -1,10 +1,8 @@
 import mysql from 'mysql2';
 
-const db = mysql.createConnection({
-    host: 'asksdb',
+export default mysql.createConnection({
+    host: 'asksdatabase',
     database: 'asksdb',
     user: 'root',
     password: 'asksdbpassword' 
 });
-
-export default db;

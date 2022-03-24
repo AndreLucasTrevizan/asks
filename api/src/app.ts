@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import config from 'config';
 import router from './routes/router';
+import dbConnection from './database/dbConnection';
 
 const app = express();
 
@@ -12,6 +13,12 @@ app.use('/api', router);
 
 const port = config.get<number>('port');
 
-app.listen(port, () => {
-    console.log(`Running at port ${port}`);
+app.listen(port, async () => {
+    dbConnection.connect((err: any) => {
+        if(err) {
+            throw new Error(err.message);
+        }
+
+        console. log(`App Running at port ${port}`);
+    });
 });
