@@ -23,22 +23,22 @@ export default new class {
                         FROM users WHERE email = ?`;
             db.query(sql, email, (err: any, result: any) => {
                 if(err) res.status(400).json(err.message);
-                let userDb: any = result;
-                if(userDb.length > 0 && brcyptjs.compareSync(user_password, userDb[0].user_password)) {
+                
+                if(result.length > 0 && brcyptjs.compareSync(user_password, result[0].user_password)) {
                     let payload = {
-                        firstname: userDb[0].firstname,
-                        lastname: userDb[0].lastname,
-                        email: userDb[0].email,
-                        id_role: userDb[0].id_role
+                        firstname: result[0].firstname,
+                        lastname: result[0].lastname,
+                        email: result[0].email,
+                        id_role: result[0].id_role
                     };
 
                     let token = jwt.sign({payload}, config.get<string>('secret'), {expiresIn: '1h'});
 
                     let user = {
-                        firstname: userDb[0].firstname,
-                        lastname: userDb[0].lastname,
-                        email: userDb[0].email,
-                        id_role: userDb[0].id_role,
+                        firstname: result[0].firstname,
+                        lastname: result[0].lastname,
+                        email: result[0].email,
+                        id_role: result[0].id_role,
                         token: token
                     };
 
