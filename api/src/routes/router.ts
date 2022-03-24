@@ -2,11 +2,12 @@ import express from 'express';
 import RolesController from '../controllers/RolesController';
 import UsersController from '../controllers/UsersController';
 import {check} from 'express-validator';
+import isAdmin from '../middlewares/isAdmin';
 const router = express.Router();
 
 router.get('/roles', RolesController.listRoles);
 
-router.get('/users', UsersController.reportUsers);
+router.get('/users', isAdmin, UsersController.reportUsers);
 
 router.post('/users', [
     check('firstname').not().isEmpty().withMessage('Name must have more than 5 characters'),
