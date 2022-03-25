@@ -3,6 +3,7 @@ import config from 'config';
 import {validationResult} from 'express-validator';
 import jwt from 'jsonwebtoken';
 import brcyptjs from 'bcryptjs';
+import fs from 'fs';
 import db from '../database/dbConnection';
 
 export default new class {
@@ -22,7 +23,7 @@ export default new class {
                             id_role
                         FROM users WHERE email = ?`;
             db.query(sql, email, (err: any, result: any) => {
-                if(err) res.status(400).json(err.message);
+                if(err) res.status(400).json({error: err.message});
                 
                 if(result.length > 0 && brcyptjs.compareSync(user_password, result[0].user_password)) {
                     let payload = {
@@ -52,14 +53,18 @@ export default new class {
 
     reportUsers(req: Request, res: Response) {
         let sql =  `SELECT
+                        users.id as id,
+                        users.firstname as firstname,
+                        users.lastname as lastname,
                         concat(users.firstname, ' ', users.lastname) as name,
                         users.email as email,
+                        roles.id as id_role,
                         roles.role_description as role,
                         users.createdAt as created_at,
                         users.updatedAt as last_update
                     FROM users INNER JOIN roles ON users.id_role = roles.id`;
         db.query(sql, (err: any, result: any) => {
-            if(err) res.status(400).json(err.message);
+            if(err) res.status(400).json({error: err.message});
 
             res.status(200).json({users: result});
         });
@@ -67,11 +72,11 @@ export default new class {
 
     createUser(req: any, res: Response) {
         let {firstname, lastname, email, user_password} = req.body;
-        let avatar = req.file.filename;
-        let role = req.body.role ? req.body.role : 2;
+        let avatar = (req.file !== undefined) ? req.file.filename : 'default.jpg';
+        let id_role = req.body.id_role ? req.body.id_role : 2;
         
         const errors = validationResult(req);
-        
+
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
@@ -81,17 +86,23 @@ export default new class {
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             db.query(sql, [
-                avatar !== undefined ? avatar : 'default.jpg',
+                avatar,
                 firstname,
                 lastname,
                 email,
                 hash,
                 1,
-                role,
+                id_role,
                 new Date(),
                 new Date()
             ],(err: any, result) => {
-                if(err) res.status(400).json(err.message);
+                if(err) {
+                    fs.unlink(`./src/uploads/${avatar}`, (err : any) => {
+                        if(err) res.status(400).json(err);
+                    });
+
+                    res.status(400).json({error: err.message});
+                }
 
                 res.status(201).json(result);
             });
@@ -119,7 +130,7 @@ export default new class {
                 new Date(),
                 id
             ], (err: any, result) => {
-                if(err) res.status(400).json(err.message);
+                if(err) res.status(400).json({error: err.message});
 
                 res.status(200).json(result);
             });
@@ -128,11 +139,24 @@ export default new class {
 
     deleteUser(req: Request, res: Response) {
         let { id } = req.params;
-        let sql = `DELETE FROM users WHERE id = ?`;
-        db.query(sql, id, (err: any, result) => {
-            if(err) res.status(400).json(err.message);
+        let sql = `SELECT avatar FROM users WHERE id = ?`;
+        db.query(sql, id, (err: any, result: any) => {
+            if(err) res.status(400).json({error: err.message});
 
-            res.status(200).json(result);
+            if(result.length > 0) {
+                if(!(result[0].avatar === 'default.jpg') && (result[0].avatar !== null)) {
+                    fs.unlink(`./src/uploads/${result[0].avatar}`, (err: any) => {
+                        if(err) res.status(400).json({error: err.message});
+                    });
+                }
+
+                let sql = 'DELETE FROM users WHERE id = ?';
+                db.query(sql, id, (err: any, result: any) => {
+                    if(err) res.status(400).json({error: err.message});
+
+                    res.status(200).json(result);
+                });
+            }
         });
     }
 
