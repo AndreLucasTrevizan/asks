@@ -65,25 +65,28 @@ export default new class {
         });
     }
 
-    createUser(req: Request, res: Response) {
+    createUser(req: any, res: Response) {
         let {firstname, lastname, email, user_password} = req.body;
+        let avatar = req.file.filename;
         let role = req.body.role ? req.body.role : 2;
         
         const errors = validationResult(req);
-        console.log(req.body);
+        
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
             let hash = brcyptjs.hashSync(user_password, 15);
             let sql = `INSERT INTO users (
-                            firstname, lastname, email, user_password, id_role, createdAt, updatedAt
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                            avatar, firstname, lastname, email, user_password, user_status, id_role, createdAt, updatedAt
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             db.query(sql, [
+                avatar !== undefined ? avatar : 'default.jpg',
                 firstname,
                 lastname,
                 email,
                 hash,
+                1,
                 role,
                 new Date(),
                 new Date()

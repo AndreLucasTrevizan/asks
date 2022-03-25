@@ -3,6 +3,7 @@ import RolesController from '../controllers/RolesController';
 import UsersController from '../controllers/UsersController';
 import {check} from 'express-validator';
 import isAdmin from '../middlewares/isAdmin';
+import upAvatar from '../middlewares/upAvatar';
 const router = express.Router();
 
 //------------------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ router.delete('/roles/:id', RolesController.deleteRole);
 
 router.get('/users', isAdmin, UsersController.reportUsers);
 
-router.post('/users', [
+router.post('/users', upAvatar, [
     check('firstname').not().isEmpty().withMessage('Name must have more than 5 characters'),
     check('lastname').not().isEmpty().withMessage('Lastname must have more than 5 characters'),
     check('email').not().isEmpty().isEmail().normalizeEmail().withMessage('Enter a valid email value'),
