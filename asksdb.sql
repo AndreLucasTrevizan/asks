@@ -14,7 +14,7 @@ create table users(
     firstname varchar(20),
     lastname varchar(50),
     email varchar(50) unique,
-    user_password varchar(20),
+    user_password varchar(250),
     user_status boolean,
     id_role int not null,
     createdAt timestamp,
@@ -92,25 +92,3 @@ create table comment_likes(
 
 insert into roles (`role_description`, `createdAt`, `updatedAt`) values ('Administrator', current_timestamp(), current_timestamp());
 insert into roles (`role_description`, `createdAt`, `updatedAt`) values ('Common', current_timestamp(), current_timestamp());
-
-insert into users(
-    `avatar`,
-    `firstname`,
-    `lastname`,
-    `email`,
-    `user_password`,
-    `user_status`,
-    `id_role`,
-    `createdAt`,
-    `updatedAt`
-) values (
-    null,
-    'André Lucas',
-    'Trevizan',
-    'andrelucastrevizan@gmail.com',
-    'Al154263789@',
-    1,
-    1,
-    current_timestamp(),
-    current_timestamp()
-);

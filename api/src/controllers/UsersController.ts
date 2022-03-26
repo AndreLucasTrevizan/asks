@@ -111,7 +111,6 @@ export default new class {
 
     updateUser(req: Request, res: Response) {
         let {id, firstname, lastname, email} = req.body;
-
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
@@ -157,6 +156,32 @@ export default new class {
                     res.status(200).json(result);
                 });
             }
+        });
+    }
+
+    updateAvatar(req: Request, res: Response) {
+        let {id} = req.params;
+        let avatar = req.file !== undefined ? req.file.filename : '';
+        let sql = 'SELECT avatar FROM users WHERE id = ?';
+        
+        db.query(sql, id, (err: any, result: any) => {
+            if(err) res.status(400).json({error: err.message});
+
+            if(result[0].avatar !== 'default.jpg') {
+                fs.unlink(`./src/uploads/${result[0].avatar}`, (err: any) => {
+                    if(err) res.status(400).json({error: err.message});
+                });
+            }
+
+            let sql = 'UPDATE users SET avatar = ? WHERE id = ?';
+            db.query(sql, [
+                avatar,
+                id
+            ], (err: any, result: any) => {
+                if(err) res.status(400).json({error: err.message});
+            
+                res.status(200).json(result);
+            });
         });
     }
 

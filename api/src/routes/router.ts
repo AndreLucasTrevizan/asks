@@ -44,4 +44,8 @@ router.post('/sign_in', [
 
 router.delete('/users/:id', UsersController.deleteUser);
 
+router.put('/users/:id/avatar', upAvatar, UsersController.updateAvatar);
+
+//------------------------------------------------------------------------------------------------------
+
 export default router;
