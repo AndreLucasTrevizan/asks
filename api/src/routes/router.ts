@@ -2,6 +2,7 @@ import express from 'express';
 import RolesController from '../controllers/RolesController';
 import UsersController from '../controllers/UsersController';
 import PostsController from '../controllers/PostsController';
+import FriendsController from '../controllers/FriendsController';
 import {check} from 'express-validator';
 import isAdmin from '../middlewares/isAdmin';
 import upAvatar from '../middlewares/upAvatar';
@@ -50,8 +51,16 @@ router.put('/users/:id/avatar', upAvatar, UsersController.updateAvatar);
 
 //------------------------------------------------------------------------------------------------------
 
+router.get('/posts/friends/:id_user', PostsController.reportPosts);
+router.get('/posts/user/:id_user', PostsController.reportUserPosts);
 router.post('/posts', upPostImage, PostsController.createPost);
-router.get('/posts/friend/:id_friend', PostsController.reportPosts);
+router.put('/posts', upPostImage, PostsController.updatePost);
+
+//------------------------------------------------------------------------------------------------------
+
+router.get('/friends/:id_user', FriendsController.reportOfFriendsFromUser);
+router.post('/friends', FriendsController.createFriendship);
+router.delete('/friends/:id', FriendsController.deleteFriend);
 
 //------------------------------------------------------------------------------------------------------
 
