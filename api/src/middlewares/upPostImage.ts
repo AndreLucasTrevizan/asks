@@ -3,7 +3,7 @@ import path from 'path';
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
-        cb(null, 'src/uploads/avatars/');
+        cb(null, 'src/uploads/posts/');
     },
 
     filename(req, file, cb) {
@@ -11,4 +11,4 @@ const storage = multer.diskStorage({
     }
 });
 
-export default multer({storage}).single('avatar');
+export default multer({storage}).single('post_image');

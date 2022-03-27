@@ -1,9 +1,11 @@
 import express from 'express';
 import RolesController from '../controllers/RolesController';
 import UsersController from '../controllers/UsersController';
+import PostsController from '../controllers/PostsController';
 import {check} from 'express-validator';
 import isAdmin from '../middlewares/isAdmin';
 import upAvatar from '../middlewares/upAvatar';
+import upPostImage from '../middlewares/upPostImage';
 const router = express.Router();
 
 //------------------------------------------------------------------------------------------------------
@@ -45,6 +47,11 @@ router.post('/sign_in', [
 router.delete('/users/:id', UsersController.deleteUser);
 
 router.put('/users/:id/avatar', upAvatar, UsersController.updateAvatar);
+
+//------------------------------------------------------------------------------------------------------
+
+router.post('/posts', upPostImage, PostsController.createPost);
+router.get('/posts/friend/:id_friend', PostsController.reportPosts);
 
 //------------------------------------------------------------------------------------------------------
 

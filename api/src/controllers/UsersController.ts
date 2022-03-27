@@ -97,7 +97,7 @@ export default new class {
                 new Date()
             ],(err: any, result) => {
                 if(err) {
-                    fs.unlink(`./src/uploads/${avatar}`, (err : any) => {
+                    fs.unlink(`./src/uploads/avatars/${avatar}`, (err : any) => {
                         if(err) res.status(400).json(err);
                     });
 
@@ -144,7 +144,7 @@ export default new class {
 
             if(result.length > 0) {
                 if(!(result[0].avatar === 'default.jpg') && (result[0].avatar !== null)) {
-                    fs.unlink(`./src/uploads/${result[0].avatar}`, (err: any) => {
+                    fs.unlink(`./src/uploads/avatars/${result[0].avatar}`, (err: any) => {
                         if(err) res.status(400).json({error: err.message});
                     });
                 }

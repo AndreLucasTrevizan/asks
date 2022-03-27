@@ -1,5 +1,7 @@
 use asksdb;
 
+use asksdb;
+
 create table roles(
     id int not null auto_increment,
     role_description varchar(100) unique,
@@ -23,26 +25,15 @@ create table users(
     constraint fk_user_role foreign key (id_role) references roles(id)
 );
 
-create table categories(
-    id int not null auto_increment,
-    category_description varchar(20),
-    createdAt timestamp,
-    updatedAt timestamp,
-    primary key (id)
-);
-
 create table posts(
     id int not null auto_increment,
-    title varchar(255),
     post_description text,
     post_image varchar(150),
     id_user int not null,
-    id_category int not null,
     createdAt timestamp,
     updatedAt timestamp,
     primary key (id),
-    constraint fk_post_user foreign key (id_user) references users(id),
-    constraint fk_post_category foreign key (id_category) references categories(id)
+    constraint fk_post_user foreign key (id_user) references users(id)
 );
 
 create table friendships(
@@ -92,3 +83,5 @@ create table comment_likes(
 
 insert into roles (`role_description`, `createdAt`, `updatedAt`) values ('Administrator', current_timestamp(), current_timestamp());
 insert into roles (`role_description`, `createdAt`, `updatedAt`) values ('Common', current_timestamp(), current_timestamp());
+
+select * from users;
