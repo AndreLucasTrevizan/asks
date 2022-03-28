@@ -34,7 +34,7 @@ router.post('/users', upAvatar, [
     check('lastname').not().isEmpty().withMessage('Lastname must have more than 5 characters'),
     check('email').not().isEmpty().isEmail().normalizeEmail().withMessage('Enter a valid email value'),
     check('user_password').not().isEmpty().withMessage('Password cannot be empty')
-], UsersController.createUser);
+], UsersController.signUp);
 
 router.put('/users', [
     check('firstname').not().isEmpty().withMessage('Name must have more than 5 characters'),
@@ -45,7 +45,7 @@ router.put('/users', [
 router.post('/sign_in', [
     check('email').not().isEmpty().isEmail().normalizeEmail().withMessage('Enter a valid email value'),
     check('user_password').not().isEmpty().withMessage('Password cannot be empty')
-], UsersController.sign_in);
+], UsersController.signIn);
 
 router.delete('/users/:id', UsersController.deleteUser);
 

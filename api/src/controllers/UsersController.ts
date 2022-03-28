@@ -8,7 +8,7 @@ import db from '../database/dbConnection';
 
 export default new class {
 
-    sign_in(req: Request, res: Response) {
+    signIn(req: Request, res: Response) {
         let {email, user_password} = req.body;
         const errors = validationResult(req);
 
@@ -70,7 +70,7 @@ export default new class {
         });
     }
 
-    createUser(req: any, res: Response) {
+    signUp(req: any, res: Response) {
         let {firstname, lastname, email, user_password} = req.body;
         let avatar = (req.file !== undefined) ? req.file.filename : 'default.jpg';
         let id_role = req.body.id_role ? req.body.id_role : 2;
