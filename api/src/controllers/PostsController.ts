@@ -4,6 +4,41 @@ import db from '../database/dbConnection';
 
 export default new class {
 
+    likingPost(req: Request, res: Response) {
+        let {id_user, id_post} = req.body;
+        let sql = `SELECT * FROM post_likes WHERE id_user = ?`;
+        db.query(sql, id_user, (err: any, result: any) => {
+            if(err) res.status(402).json({msg: err.message});
+
+            if(result.length > 0) {
+                let sql = 'DELETE FROM post_likes WHERE id_user = ?';
+
+                db.query(sql, id_user, (err: any, result: any) => {
+                    if(err) res.status(402).json({msg: err.message});
+
+                    res.status(200).json(result);
+                });
+            } else {
+                let sql = `
+                    INSERT INTO post_likes (
+                        id_user, id_post, createdAt, updatedAt
+                    ) VALUES (?, ?, ?, ?)
+                `;
+
+                db.query(sql, [
+                    id_user,
+                    id_post,
+                    new Date(),
+                    new Date()
+                ], (err: any, result: any) => {
+                    if(err) res.status(402).json({msg: err.message});
+
+                    res.status(200).json(result);
+                });
+            }
+        });
+    }
+
     reportPosts(req: Request, res: Response) {
         let {id_user} = req.params;
         let sql = `

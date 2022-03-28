@@ -54,6 +54,7 @@ router.put('/users/:id/avatar', upAvatar, UsersController.updateAvatar);
 router.get('/posts/friends/:id_user', PostsController.reportPosts);
 router.get('/posts/user/:id_user', PostsController.reportUserPosts);
 router.post('/posts', upPostImage, PostsController.createPost);
+router.post('/posts/like', PostsController.likingPost);
 router.put('/posts', upPostImage, PostsController.updatePost);
 
 //------------------------------------------------------------------------------------------------------
