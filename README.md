@@ -1,4 +1,4 @@
-# Social Media Asks
+# Social Media
 
 ## About the project
 
