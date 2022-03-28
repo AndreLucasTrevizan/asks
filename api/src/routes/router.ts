@@ -3,10 +3,12 @@ import RolesController from '../controllers/RolesController';
 import UsersController from '../controllers/UsersController';
 import PostsController from '../controllers/PostsController';
 import FriendsController from '../controllers/FriendsController';
+import CommentsController from '../controllers/CommentsController';
 import {check} from 'express-validator';
 import isAdmin from '../middlewares/isAdmin';
 import upAvatar from '../middlewares/upAvatar';
 import upPostImage from '../middlewares/upPostImage';
+import upCommentImage from '../middlewares/upCommentImage';
 const router = express.Router();
 
 //------------------------------------------------------------------------------------------------------
@@ -56,12 +58,21 @@ router.get('/posts/user/:id_user', PostsController.reportUserPosts);
 router.post('/posts', upPostImage, PostsController.createPost);
 router.post('/posts/like', PostsController.likingPost);
 router.put('/posts', upPostImage, PostsController.updatePost);
+router.delete('/posts/:id', PostsController.deletePost);
 
 //------------------------------------------------------------------------------------------------------
 
 router.get('/friends/:id_user', FriendsController.reportOfFriendsFromUser);
 router.post('/friends', FriendsController.createFriendship);
 router.delete('/friends/:id', FriendsController.deleteFriend);
+
+//------------------------------------------------------------------------------------------------------
+
+router.get('/comments/:id_post', CommentsController.reportCommentFromPost);
+router.post('/comments', upCommentImage, CommentsController.createComment);
+router.post('/comments/like', CommentsController.likingComments);
+router.put('/comments', upCommentImage, CommentsController.updateComment);
+router.delete('/comments/:id', CommentsController.deleteComment);
 
 //------------------------------------------------------------------------------------------------------
 
