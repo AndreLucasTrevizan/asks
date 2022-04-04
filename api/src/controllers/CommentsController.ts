@@ -6,13 +6,13 @@ export default new class {
 
     likingComments(req: Request, res: Response) {
         let {id_user, id_comment} = req.body;
-        let sql = `SELECT * FROM comment_likes WHERE id_user = ?`;
+        let sql = `CALL GettingLikesOfCommentByUser(?)`;
     
         db.query(sql, id_user, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
-            if(result.length > 0) {
-                let sql = 'DELETE FROM comment_likes WHERE id_user = ?';
+            if(result[0].length > 0) {
+                let sql = 'CALL RemovingLikeOfComment(?)';
 
                 db.query(sql, id_user, (err: any, result: any) => {
                     if(err) res.status(402).json({error: err.message});
@@ -20,12 +20,7 @@ export default new class {
                     res.status(200).json(result);
                 });
             } else {
-                let sql = `
-                    INSERT INTO comment_likes (
-                        id_user,
-                        id_comment
-                    ) VALUES (?, ?, ?, ?);
-                `;
+                let sql = `CALL LikingComment(?, ?)`;
 
                 db.query(sql, [
                     id_user,
@@ -41,7 +36,7 @@ export default new class {
 
     reportCommentFromPost(req: Request, res: Response){
         let {id_post} = req.params;
-        let sql = `SELECT * FROM comments WHERE id_post = ?`;
+        let sql = `CALL ReportCommentsOfPost(?)`;
         db.query(sql, id_post, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
@@ -52,24 +47,13 @@ export default new class {
     createComment(req: Request, res: Response) {
         let {comment_description, comment_image, id_user, id_post} = req.body;
         let comment_img = req.file !== undefined ? req.file.filename : null;
-        let sql = `
-            INSERT INTO comments (
-                comment_description,
-                comment_image,
-                id_user,
-                id_post,
-                createdAt,
-                updatedAt
-            ) VALUES (?, ?, ?, ?, ?, ?);
-        `;
+        let sql = `CALL CreatingComment(?, ?, ?, ?)`;
 
         db.query(sql, [
             comment_description,
             comment_img,
             id_user,
-            id_post,
-            new Date(),
-            new Date(),
+            id_post
         ], (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
@@ -80,12 +64,7 @@ export default new class {
     updateComment(req: Request, res: Response) {
         let {id, comment_description, comment_image} = req.body;
         let cmt_image = req.file !== undefined ? req.file.filename : comment_image;
-        let sql = `
-            UPDATE comments SET 
-                comment_description = ?,
-                comment_image = ?
-            WHERE id = ?
-        `;
+        let sql = `CALL UpdateComment(?, ?, ?)`;
 
         db.query(sql, [
             comment_description,
@@ -108,18 +87,18 @@ export default new class {
 
     deleteComment(req: Request, res: Response) {
         let {id} = req.params;
-        let sql = 'SELECT comment_image FROM comments WHERE id = ?';
+        let sql = 'CALL GetCommentImage(?)';
 
         db.query(sql, id, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
-            if(result.length > 0) {
-                fs.unlink(`./src/uploads/comments/${result[0].post_image}`, (err: any) => {
+            if(result[0].length > 0) {
+                fs.unlink(`./src/uploads/comments/${result[0][0].post_image}`, (err: any) => {
                     if(err) res.status(402).json({error: err.message});
                 });
             }
 
-            let sql = `DELETE FROM comments WHERE id = ${id}`;
+            let sql = `CALL DeleteComment(?)`;
             db.query(sql, id, (err: any, result: any) => {
                 if(err) res.status(402).json({error: err.message});
 

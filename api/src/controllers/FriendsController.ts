@@ -5,13 +5,7 @@ export default new class {
 
     reportOfFriendsFromUser(req: Request, res: Response) {
         let {id_user} = req.params;
-        let sql = `
-            SELECT
-                users.id as id,
-                concat(users.firstname, ' ', users.lastname) as name,
-            FROM users
-            INNER JOIN friendships ON friendships.id_user = ? AND friendships.id_friend = users.id 
-        `;
+        let sql = `CALL ReportFriendsOfUser(?)`;
 
         db.query(sql, id_user, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
@@ -22,17 +16,11 @@ export default new class {
 
     createFriendship(req: Request, res: Response) {
         let {id_user, id_friend} = req.body;
-        let sql = `
-            INSERT INTO friendships (
-                id_user, id_friend, createdAt, updatedAt
-            ) VALUES (?, ?, ?, ?)
-        `;
+        let sql = `CALL AddingFriend(?, ?)`;
 
         db.query(sql, [
             id_user,
-            id_friend,
-            new Date(),
-            new Date()
+            id_friend
         ], (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
@@ -42,7 +30,7 @@ export default new class {
 
     deleteFriend(req: Request, res: Response) {
         let {id} = req.params;
-        let sql = `DELETE FROM friendships WHERE id = ?`;
+        let sql = `CALL RemovingFriend(?)`;
         db.query(sql, id, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 

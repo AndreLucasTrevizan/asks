@@ -15,31 +15,24 @@ export default new class {
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
-            let sql = `SELECT
-                            firstname,
-                            lastname,
-                            email,
-                            user_password,
-                            id_role
-                        FROM users WHERE email = ?`;
+            let sql = `CALL GetUserByEmail(?)`;
             db.query(sql, email, (err: any, result: any) => {
                 if(err) res.status(400).json({error: err.message});
-                
-                if(result.length > 0 && brcyptjs.compareSync(user_password, result[0].user_password)) {
+                if(result[0].length > 0 && brcyptjs.compareSync(user_password, result[0][0].user_password)) {
                     let payload = {
-                        firstname: result[0].firstname,
-                        lastname: result[0].lastname,
-                        email: result[0].email,
-                        id_role: result[0].id_role
+                        firstname: result[0][0].firstname,
+                        lastname: result[0][0].lastname,
+                        email: result[0][0].email,
+                        id_role: result[0][0].id_role
                     };
 
                     let token = jwt.sign({payload}, config.get<string>('secret'), {expiresIn: '1h'});
 
                     let user = {
-                        firstname: result[0].firstname,
-                        lastname: result[0].lastname,
-                        email: result[0].email,
-                        id_role: result[0].id_role,
+                        firstname: result[0][0].firstname,
+                        lastname: result[0][0].lastname,
+                        email: result[0][0].email,
+                        id_role: result[0][0].id_role,
                         token: token
                     };
 
@@ -52,21 +45,11 @@ export default new class {
     }
 
     reportUsers(req: Request, res: Response) {
-        let sql =  `SELECT
-                        users.id as id,
-                        users.firstname as firstname,
-                        users.lastname as lastname,
-                        concat(users.firstname, ' ', users.lastname) as name,
-                        users.email as email,
-                        roles.id as id_role,
-                        roles.role_description as role,
-                        users.createdAt as created_at,
-                        users.updatedAt as last_update
-                    FROM users INNER JOIN roles ON users.id_role = roles.id`;
+        let sql =  `CALL ReportUsers()`;
         db.query(sql, (err: any, result: any) => {
             if(err) res.status(400).json({error: err.message});
 
-            res.status(200).json({users: result});
+            res.status(200).json(result[0]);
         });
     }
 
@@ -81,9 +64,7 @@ export default new class {
             res.status(402).json(errors.array());
         } else {
             let hash = brcyptjs.hashSync(user_password, 15);
-            let sql = `INSERT INTO users (
-                            avatar, firstname, lastname, email, user_password, user_status, id_role, createdAt, updatedAt
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            let sql = `CALL InsertUsers(?, ?, ?, ?, ?, ?, ?)`;
 
             db.query(sql, [
                 avatar,
@@ -92,9 +73,7 @@ export default new class {
                 email,
                 hash,
                 1,
-                id_role,
-                new Date(),
-                new Date()
+                id_role
             ],(err: any, result) => {
                 if(err) {
                     fs.unlink(`./src/uploads/avatars/${avatar}`, (err : any) => {
@@ -116,17 +95,11 @@ export default new class {
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
-            let sql = `UPDATE users SET
-                            firstname = ?,
-                            lastname = ?,
-                            email = ?,
-                            updatedAt = ?
-                        WHERE id = ?`;
+            let sql = `CALL UpdateUser(?, ?, ?, ?)`;
             db.query(sql, [
                 firstname,
                 lastname,
                 email,
-                new Date(),
                 id
             ], (err: any, result) => {
                 if(err) res.status(400).json({error: err.message});
@@ -138,18 +111,18 @@ export default new class {
 
     deleteUser(req: Request, res: Response) {
         let { id } = req.params;
-        let sql = `SELECT avatar FROM users WHERE id = ?`;
+        let sql = `CALL GetAvatarFromUserById(?)`;
         db.query(sql, id, (err: any, result: any) => {
             if(err) res.status(400).json({error: err.message});
 
-            if(result.length > 0) {
-                if(!(result[0].avatar === 'default.jpg') && (result[0].avatar !== null)) {
-                    fs.unlink(`./src/uploads/avatars/${result[0].avatar}`, (err: any) => {
+            if(result[0].length > 0) {
+                if((result[0][0].avatar !== 'default.jpg') && (result[0][0].avatar !== null)) {
+                    fs.unlink(`./src/uploads/avatars/${result[0][0].avatar}`, (err: any) => {
                         if(err) res.status(400).json({error: err.message});
                     });
                 }
 
-                let sql = 'DELETE FROM users WHERE id = ?';
+                let sql = 'CALL DeleteUser(?)';
                 db.query(sql, id, (err: any, result: any) => {
                     if(err) res.status(400).json({error: err.message});
 
@@ -162,18 +135,18 @@ export default new class {
     updateAvatar(req: Request, res: Response) {
         let {id} = req.params;
         let avatar = req.file !== undefined ? req.file.filename : '';
-        let sql = 'SELECT avatar FROM users WHERE id = ?';
+        let sql = 'CALL GetAvatarFromUserById(?)';
         
         db.query(sql, id, (err: any, result: any) => {
             if(err) res.status(400).json({error: err.message});
 
-            if(result[0].avatar !== 'default.jpg') {
+            if(result[0][0].avatar !== 'default.jpg') {
                 fs.unlink(`./src/uploads/${result[0].avatar}`, (err: any) => {
                     if(err) res.status(400).json({error: err.message});
                 });
             }
 
-            let sql = 'UPDATE users SET avatar = ? WHERE id = ?';
+            let sql = 'CALL UpdateAvatarFromUserById(?, ?)';
             db.query(sql, [
                 avatar,
                 id

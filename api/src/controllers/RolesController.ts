@@ -5,7 +5,7 @@ import db from '../database/dbConnection';
 export default new class {
 
     listRoles(req: Request, res: Response) {
-        let sql = `SELECT * FROM roles`;
+        let sql = `CALL ReportRoles()`;
         db.query(sql, (err: any, result) => {
             if(err) throw new Error(err);
 
@@ -15,7 +15,7 @@ export default new class {
 
     createRole(req: Request, res: Response) {
         let {role_description} = req.body;
-        let sql = 'INSERT INTO roles (role_description, createdAt, updatedAt) VALUES (?, ?, ?)';
+        let sql = 'CALL InsertRoles(?)';
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
@@ -23,8 +23,6 @@ export default new class {
         } else {
             db.query(sql, [
                 role_description,
-                new Date(),
-                new Date()
             ], (err: any, result) => {
                 if(err) res.status(400).json(err.message);
     
@@ -36,14 +34,15 @@ export default new class {
 
     updateRole(req: Request, res: Response) {
         let {id, role_description} = req.body;
-        let sql = `UPDATE roles SET role_description = ?, updatedAt = ? WHERE id = ?`;
+        let sql = `CALL UpdateRole(?, ?)`;
+
         const errors = validationResult(req);
+
         if(!errors.isEmpty()) {
             res.status(402).json(errors.array());
         } else {
             db.query(sql, [
                 role_description,
-                new Date(),
                 id
             ], (err: any, result) => {
                 if(err) res.status(400).json(err.message);
@@ -55,7 +54,7 @@ export default new class {
 
     deleteRole(req: Request, res: Response) {
         let {id} = req.params;
-        let sql = `DELETE FROM roles WHERE id = ?`;
+        let sql = `CALL DeleteRole(?)`;
         db.query(sql, id, (err: any, result) => {
             if(err) res.status(400).json(err.message);
 
