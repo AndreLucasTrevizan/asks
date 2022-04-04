@@ -48,7 +48,7 @@ export default new class {
 
     reportUserPosts(req: Request, res: Response) {
         let {id_user} = req.params;
-        let sql = `CALL GetPostsOfUserById()`;
+        let sql = `CALL ReportPosts(?)`;
 
         db.query(sql, id_user, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});

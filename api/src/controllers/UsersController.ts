@@ -141,7 +141,7 @@ export default new class {
             if(err) res.status(400).json({error: err.message});
 
             if(result[0][0].avatar !== 'default.jpg') {
-                fs.unlink(`./src/uploads/${result[0].avatar}`, (err: any) => {
+                fs.unlink(`./src/uploads/avatars/${result[0][0].avatar}`, (err: any) => {
                     if(err) res.status(400).json({error: err.message});
                 });
             }

@@ -6,10 +6,10 @@ export default new class {
 
     listRoles(req: Request, res: Response) {
         let sql = `CALL ReportRoles()`;
-        db.query(sql, (err: any, result) => {
+        db.query(sql, (err: any, result: any) => {
             if(err) throw new Error(err);
 
-            res.status(200).json({roles: result});
+            res.status(200).json(result[0]);
         });
     }
 

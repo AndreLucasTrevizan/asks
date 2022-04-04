@@ -362,9 +362,9 @@ create procedure ReportFriendsOfUser(p_id_user int)
 begin
     SELECT
         users.id as id,
-        concat(users.firstname, ' ', users.lastname) as name,
+        concat(users.firstname, ' ', users.lastname) as name
     FROM users
-    INNER JOIN friendships ON friendships.id_user = p_id_user AND friendships.id_friend = users.id
+    INNER JOIN friendships ON friendships.id_user = p_id_user AND friendships.id_friend = users.id;
 end$$
 delimiter ;
 
@@ -375,7 +375,9 @@ create procedure AddingFriend(p_id_user int, p_id_friend int)
 begin
     INSERT INTO friendships (
         id_user,
-        id_friend
+        id_friend,
+        createdAt,
+        updatedAt
     ) VALUES (
         p_id_user,
         p_id_friend,
@@ -419,7 +421,7 @@ begin
         p_id_post,
         current_timestamp(),
         current_timestamp()
-    )
+    );
 end$$
 delimiter ;
 
@@ -470,9 +472,13 @@ delimiter ;
 -- ------------------------------------------------------------------------------------------------------
 
 delimiter $$
-create procedure UpdateComment(p_comment_description text, p_comment_image varchar(150), p_id int)
+create procedure UpdateComment(
+    p_comment_description text,
+    p_comment_image varchar(150),
+    p_id int
+)
 begin
-    update from comments set
+    update comments set
         comment_description = p_comment_description,
         comment_image = p_comment_image,
         updatedAt = current_timestamp()
