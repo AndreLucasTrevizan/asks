@@ -10,7 +10,7 @@ services:
     volumes:
       - './database/:/var/lib/mysql'
     ports:
-      - '9706:3306'
+      - '9707:3306'
     networks:
       - backend
   asksapi:

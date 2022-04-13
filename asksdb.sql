@@ -1,3 +1,5 @@
+use asksdb;
+
 create table roles(
     id int not null auto_increment,
     role_description varchar(100) unique,
@@ -308,6 +310,7 @@ begin
 		posts.post_description as post_description,
 		posts.post_image as post_image,
 		concat(users.firstname, ' ', users.lastname) as posted_by,
+        (SELECT count(*) FROM post_likes WHERE id_post = posts.id) as likes,
 		posts.createdAt as createdAt,
 		posts.updatedAt as updatedAt
 	FROM posts

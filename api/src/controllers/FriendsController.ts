@@ -10,7 +10,7 @@ export default new class {
         db.query(sql, id_user, (err: any, result: any) => {
             if(err) res.status(402).json({error: err.message});
 
-            res.status(200).json(result);
+            res.status(200).json(result[0]);
         });
     }
 
