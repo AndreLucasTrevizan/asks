@@ -384,6 +384,17 @@ begin
         current_timestamp(),
         current_timestamp()
     );
+    INSERT INTO friendships (
+        id_user,
+        id_friend,
+        createdAt,
+        updatedAt
+    ) VALUES (
+        p_id_friend,
+        p_id_user,
+        current_timestamp(),
+        current_timestamp()
+    );
 end$$
 delimiter ;
 
